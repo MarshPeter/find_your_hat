@@ -6,8 +6,8 @@ const fieldCharacter = "░";
 const pathCharacter = "*";
 
 class Field {
-    constructor(array) {
-        this._field = Field.generateField(5, 5, 0.2);
+    constructor(width = 5, height = 5, holePercentage = 0.2) {
+        this._field = Field.generateField(width, height, holePercentage);
         this._position = [0, 0];
     }
     print() {
