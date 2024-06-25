@@ -7,7 +7,7 @@ const pathCharacter = "*";
 
 class Field {
     constructor(array) {
-        this._field = array;
+        this._field = Field.generateField(5, 5, 0.2);
         this._position = [0, 0];
     }
     print() {
@@ -38,13 +38,57 @@ class Field {
             return [true, "You fell in a hole, you lose!"];
         }
 
-        return [true, null];
+        return [false, null];
     }
     winningPosition() {
         if (this._field[this._position[0]][this._position[1]] === hat) {
             return [true, "You win!"];
         }
         return [false, null];
+    }
+    static generateField(width = 3, height = 3, percentageHoles = 0.2) {
+        if (percentageHoles >= 0.5) {
+            throw new Error("That is too many holes");
+        }
+        if (width === 0 || height === 0) {
+            throw new Error("Height and Width cannot be set to zero");
+        }
+        let fieldArray = new Array(width)
+            .fill()
+            .map((_) => Array(height).fill(fieldCharacter));
+
+        let numberOfHoles = Math.floor(width * height * percentageHoles);
+        let i = 0;
+
+        while (i < numberOfHoles) {
+            let row = Math.floor(Math.random() * height);
+            let col = Math.floor(Math.random() * width);
+
+            if (
+                fieldArray[row][col] === fieldCharacter &&
+                row !== 0 &&
+                col !== 0
+            ) {
+                fieldArray[row][col] = hole;
+                i++;
+            }
+        }
+
+        let hatPlaced = false;
+
+        while (!hatPlaced) {
+            let row = Math.floor(Math.random() * height);
+            let col = Math.floor(Math.random() * width);
+
+            if (fieldArray[row][col] !== hole && row !== 0 && col !== 0) {
+                fieldArray[row][col] = hat;
+                hatPlaced = true;
+            }
+        }
+
+        fieldArray[0][0] = pathCharacter;
+
+        return fieldArray;
     }
 }
 
@@ -113,6 +157,7 @@ class Game {
 
             if (losing) {
                 console.log(losingMsg);
+                break;
             }
 
             let [winning, winningMsg] = this._arena.winningPosition();
